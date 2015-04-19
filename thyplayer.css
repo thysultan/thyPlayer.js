@@ -35,7 +35,7 @@
     width:10px;
     background:#333;
 }
-.thyplayer a.playing:after{left:60%;;margin-right:-0;}
+.thyplayer a.playing:after{left:60%;margin-right:-0;}
 .thyplayer a.playing:before{right:60%;margin-left:-0;}
 
 .thyplayer h1, p{

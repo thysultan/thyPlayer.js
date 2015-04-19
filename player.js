@@ -31,12 +31,33 @@
         _this.opts.src            = opts.src || null;
         _this.opts.hideTime       = opts.hideTime || null;
 
+        // nodes
+        _this.$ = {
+            base: function(){
+                var $ = document.getElementsByClassName(_this.opts.node), elem = $[0];
+                return{$: $,elem: elem}
+            },
+            canvas: function(){
+                var $ = document.getElementsByClassName(_this.opts.node)[0].getElementsByTagName("canvas"), elem = $[0];
+                var ctx = elem.getContext("2d");
+                return{$: $,elem: elem,ctx:ctx}
+            },
+            play: function(){
+                var $ = document.getElementsByClassName(_this.opts.node)[0].getElementsByTagName("a"), elem = $[0];
+                return{$: $,elem: elem}
+            },
+            audio: function(){
+                var $ = document.getElementsByClassName(_this.opts.node)[0].getElementsByTagName("audio"), elem = $[0];
+                return{$: $,elem: elem, tag: "audio"}
+            }
+        }
+
         // data
         _this.data = {
             context: null,
             audio: null,
             analyser: null,
-            source: null,
+            source: {},
             cy: null,
             cx: null,
             divider: null,
@@ -48,24 +69,7 @@
             barHeight: null,
             src: null,
             time: null
-        }
-
-        // nodes
-        _this.$ = {
-            base: function(){
-                var $ = document.getElementsByClassName(_this.opts.node), elem = $[0];
-                return{$: $,elem: elem}
-            },
-            canvas: function(){
-                var $ = document.getElementsByTagName("canvas"), elem = $[0];
-                var ctx = elem.getContext("2d");
-                return{$: $,elem: elem,ctx:ctx}
-            },
-            play: function(){
-                var $ =  this.base().elem.getElementsByTagName("a"), elem = $[0];
-                return{$: $,elem: elem}
-            }
-        }
+        };
 
         // methodes
         _this.methodes = {
@@ -229,7 +233,6 @@
                     _this.data.audio.loop = false;
                     _this.data.audio.autoplay = false;
 
-
                     _this.$.base().elem.appendChild(_this.data.audio);
 
                     window.AudioContext = window.AudioContext || window.webkitAudioContext || window.mozAudioContext || window.msAudioContext;
@@ -237,8 +240,11 @@
                     analyser = _this.data.context.createAnalyser(); // AnalyserNode method
                     // Re-route audio playback into the processing graph of the AudioContext
                     _this.data.source = _this.data.context.createMediaElementSource(_this.data.audio);
+
                     _this.data.source.connect(analyser);
                     analyser.connect(_this.data.context.destination);
+
+                    _this.data.source.mediaElement = document.getElementsByClassName(_this.opts.node)[0].getElementsByTagName(_this.$.audio().tag)[0];
 
                     _this.events.onPlayClick();
                     _this.events.onPlayEnd();
@@ -274,6 +280,7 @@
             },
             onVolumeChange: function(data, e){
                 _this.data.source.mediaElement.volume = parseInt(data.value)/100
+                console.log(_this.data.source.mediaElement.volume);
             }
         }
 

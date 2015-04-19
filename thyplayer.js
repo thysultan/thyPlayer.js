@@ -280,7 +280,6 @@
             },
             onVolumeChange: function(data, e){
                 _this.data.source.mediaElement.volume = parseInt(data.value)/100
-                console.log(_this.data.source.mediaElement.volume);
             }
         }
 

@@ -23,7 +23,7 @@
         _this.opts.barWidth       = opts.barWidth || 2.5;
         _this.opts.progBarWidth   = opts.progBarWidth || 6;
         _this.opts.density        = opts.density || 0.4;
-        _this.opts.color          = opts.color || "red";
+        _this.opts.color          = opts.color || null;
         _this.opts.progBarColor   = opts.progBarColor || "#333";
         _this.opts.seekBarColor   = opts.seekBarColor || "red";
         _this.opts.node           = opts.node || "thyplayer";
@@ -104,9 +104,12 @@
                     return {
                         raw: time,
                         formate: function(){
-                            if(seconds < 10){seconds = "0"+seconds.toString()}
+                            if(isNaN(minutes)){minutes = "0";}
+                            if(isNaN(seconds)){seconds = "0";}
+
+                            if(seconds < 10){seconds = "0"+seconds.toString();}
                             var timestamp = minutes + ":" + seconds;
-                            return timestamp
+                            return timestamp;
                         }
                     }
                 },
@@ -118,8 +121,11 @@
                 update: function(degrees){
                     var degrees = Math.abs(degrees);
                     var degToTime = _this.methodes.time.duration().raw;
+                    if(degToTime > 100000 || !degToTime){return false;}
+
                         degToTime = (Math.abs(degrees)/360) * degToTime;
                         degToTime = degToTime;
+
                     _this.data.source.mediaElement.currentTime = degToTime;
                     _this.data.time = degToTime;
                 },
@@ -156,6 +162,32 @@
                 }
             },
             canvas: {
+                init: function(){
+                    if(_this.opts.src){_this.data.src = _this.opts.src};
+
+                    _this.data.audio = new Audio();
+                    _this.data.audio.src = _this.data.src;
+                    _this.data.audio.controls = true;
+                    _this.data.audio.loop = false;
+                    _this.data.audio.autoplay = false;
+
+                    _this.$.base().elem.appendChild(_this.data.audio);
+
+                    window.AudioContext = window.AudioContext || window.webkitAudioContext || window.mozAudioContext || window.msAudioContext;
+                    _this.data.context = new AudioContext(); // AudioContext object instance
+                    analyser = _this.data.context.createAnalyser(); // AnalyserNode method
+                    // Re-route audio playback into the processing graph of the AudioContext
+                    _this.data.source = _this.data.context.createMediaElementSource(_this.data.audio);
+
+                    _this.data.source.connect(analyser);
+                    analyser.connect(_this.data.context.destination);
+
+                    _this.data.source.mediaElement = document.getElementsByClassName(_this.opts.node)[0].getElementsByTagName(_this.$.audio().tag)[0];
+
+                    _this.events.onPlayClick();
+                    _this.events.onPlayEnd();
+                    _this.methodes.canvas.frameLooper();
+                },
                 frameLooper: function(){
                     window.requestAnimationFrame = window.requestAnimationFrame || window.webkitRequestAnimationFrame || window.mozRequestAnimationFrame || window.msRequestAnimationFrame;
                     window.requestAnimationFrame(_this.methodes.canvas.frameLooper);
@@ -207,6 +239,7 @@
 
                     // draw base circle
                     _this.$.canvas().ctx.beginPath();
+
                     _this.$.canvas().ctx.lineWidth = data.progBarWidth/8;
                     _this.$.canvas().ctx.strokeStyle = data.seekBarColor;
                     if(_this.data.gradient){_this.$.canvas().ctx.strokeStyle = _this.data.gradient;}
@@ -223,32 +256,6 @@
                     _this.data.deg90toRad = 1.5 * Math.PI;
                     _this.$.canvas().ctx.arc(radius.cx(), radius.cy(), radius.outer-data.progBarWidth, _this.data.deg90toRad, _this.methodes.time.currentInRadians()+(_this.data.deg90toRad) );
                     _this.$.canvas().ctx.stroke();
-                },
-                init: function(){
-                    if(_this.opts.src){_this.data.src = _this.opts.src};
-
-                    _this.data.audio = new Audio();
-                    _this.data.audio.src = _this.data.src;
-                    _this.data.audio.controls = true;
-                    _this.data.audio.loop = false;
-                    _this.data.audio.autoplay = false;
-
-                    _this.$.base().elem.appendChild(_this.data.audio);
-
-                    window.AudioContext = window.AudioContext || window.webkitAudioContext || window.mozAudioContext || window.msAudioContext;
-                    _this.data.context = new AudioContext(); // AudioContext object instance
-                    analyser = _this.data.context.createAnalyser(); // AnalyserNode method
-                    // Re-route audio playback into the processing graph of the AudioContext
-                    _this.data.source = _this.data.context.createMediaElementSource(_this.data.audio);
-
-                    _this.data.source.connect(analyser);
-                    analyser.connect(_this.data.context.destination);
-
-                    _this.data.source.mediaElement = document.getElementsByClassName(_this.opts.node)[0].getElementsByTagName(_this.$.audio().tag)[0];
-
-                    _this.events.onPlayClick();
-                    _this.events.onPlayEnd();
-                    _this.methodes.canvas.frameLooper();
                 }
             }
         }
@@ -318,6 +325,14 @@
             vol.addEventListener("input", function(e){
                 _this.events.onVolumeChange(this, e);
             });
+
+            // Defaults to gradient if color not specified.
+            if(!_this.opts.color){
+                var gradient = _this.$.canvas().ctx.createLinearGradient(0, 0, 0, 300);
+                gradient.addColorStop(1, 'red');
+                gradient.addColorStop(0, '#F7C100');
+                _this.data.gradient = gradient;
+            }
         }();
 
         _this.update = function(){

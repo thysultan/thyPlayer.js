@@ -48,15 +48,16 @@
 
 /* PLAY BUTTON */
 .thyplayer h1{
-    font-size: 38px;
+    font-size: 34px;
     font-weight: 300;
-    margin-bottom:24px;
+    margin-bottom:18px;
 }
 
 /* TIME */
 .thyplayer p{
     font-size: 18px;
     font-weight: 300;
+    margin-bottom:0px;
 }
 
 /* VOLUME */
@@ -71,7 +72,7 @@
     background-color: #CCC;
     outline:none;
     cursor:pointer;
-    margin:20px auto 30px auto;
+    margin:20px auto 20px auto;
 }
 
 .thyplayer input::-webkit-slider-thumb,

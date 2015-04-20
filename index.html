@@ -7,29 +7,17 @@
         <meta http-equiv="X-UA-Compatible" content="IE=9" />
         <title>thyplayer.js</title>
         <link rel="stylesheet" href="thyplayer.css">
-        <script src="player.js"></script>
+        <script src="thyplayer.js"></script>
     </head>
     <body>
         <div class="thyplayer"></div>
-
         <script>
             window.onload = function() {
                 var player = new thyplayer({
                     src: "test.mp3",
                     name: "Feel It - Ishi Yashishi"
-                    // hideTime: true,
-                    // leave name blank to hide name
-                    // color: "rgb(blah)"
-                    // node: "classname" - without the . (dot)
-                    // and much more, just console.log(thyplayer) and see the .opts object
+                    // see console.log(thyplayer), view the .opts object
                 });
-
-                // Use gradient for demo
-                var gradient = player.$.canvas().ctx.createLinearGradient(0, 0, 0, 300);
-                gradient.addColorStop(1, 'red');
-                gradient.addColorStop(0, '#F7C100');
-                player.data.gradient = gradient;
-
                 console.log(player);
             };
         </script>

@@ -9,7 +9,7 @@
 (function(){
     // safe debugging on production
     if (!window.console){
-        window.console = {log: function(data) {return(data)}};
+        window.console = {log: function(data) {return(data);}};
     }
 
     thyplayer = function(opts) {
@@ -35,22 +35,22 @@
         _this.$ = {
             base: function(){
                 var $ = document.getElementsByClassName(_this.opts.node), elem = $[0];
-                return{$: $,elem: elem}
+                return{$: $,elem: elem};
             },
             canvas: function(){
                 var $ = document.getElementsByClassName(_this.opts.node)[0].getElementsByTagName("canvas"), elem = $[0];
                 var ctx = elem.getContext("2d");
-                return{$: $,elem: elem,ctx:ctx}
+                return{$: $,elem: elem,ctx:ctx};
             },
             play: function(){
                 var $ = document.getElementsByClassName(_this.opts.node)[0].getElementsByTagName("a"), elem = $[0];
-                return{$: $,elem: elem}
+                return{$: $,elem: elem};
             },
             audio: function(){
                 var $ = document.getElementsByClassName(_this.opts.node)[0].getElementsByTagName("audio"), elem = $[0];
-                return{$: $,elem: elem, tag: "audio"}
+                return{$: $,elem: elem, tag: "audio"};
             }
-        }
+        };
 
         // data
         _this.data = {
@@ -92,7 +92,7 @@
                     y1: cy + oRadius * Math.sin(angle),             // y1 point (outer)
                     x2: cx + (oRadius - length) * Math.cos(angle),  // x2 point (inner)
                     y2: cy + (oRadius - length) * Math.sin(angle)   // y2 point (inner)
-                  }
+                  };
                 }
             },
             time: {
@@ -111,15 +111,20 @@
                             var timestamp = minutes + ":" + seconds;
                             return timestamp;
                         }
-                    }
+                    };
                 },
                 currentInRadians: function(){
                     var degrees = (this.current().raw/this.duration().raw) * 360;
                     var radians = degrees * (Math.PI/180);
                     return radians;
                 },
+                getTimeInRadians: function(data){
+                    var degrees = (data/this.duration().raw) * 360;
+                    var radians = degrees * (Math.PI/180);
+                    return radians;
+                },
                 update: function(degrees){
-                    var degrees = Math.abs(degrees);
+                    degrees = Math.abs(degrees);
                     var degToTime = _this.methodes.time.duration().raw;
                     if(degToTime > 100000 || !degToTime){return false;}
 
@@ -154,7 +159,7 @@
                         dy = my - _this.data.cy;
 
                     var angle = Math.atan2(dy, dx),
-                        degrees = angle * (180/Math.PI),
+                        degrees = angle * (180/Math.PI);
                         degrees = (degrees + 360+90) % 360;
 
                     _this.methodes.time.update(degrees);
@@ -163,7 +168,7 @@
             },
             canvas: {
                 init: function(){
-                    if(_this.opts.src){_this.data.src = _this.opts.src};
+                    if(_this.opts.src){_this.data.src = _this.opts.src;}
 
                     _this.data.audio = new Audio();
                     _this.data.audio.src = _this.data.src;
@@ -237,16 +242,33 @@
                     if(_this.data.gradient){_this.$.canvas().ctx.strokeStyle = _this.data.gradient;}
                     _this.$.canvas().ctx.stroke();// stroke all lines at once
 
-                    // draw base circle
+                    // draw base static circle
                     _this.$.canvas().ctx.beginPath();
 
-                    _this.$.canvas().ctx.lineWidth = data.progBarWidth/8;
+                    _this.$.canvas().ctx.lineWidth = data.progBarWidth/6;
                     _this.$.canvas().ctx.strokeStyle = data.seekBarColor;
                     if(_this.data.gradient){_this.$.canvas().ctx.strokeStyle = _this.data.gradient;}
 
                     _this.data.deg90toRad = 1.5 * Math.PI;
                     _this.$.canvas().ctx.arc(radius.cx(), radius.cy(), radius.outer-data.progBarWidth+0.5, _this.data.deg90toRad, 1.499*Math.PI );
                     _this.$.canvas().ctx.stroke();
+
+                    var buffered = _this.data.source.mediaElement.buffered;
+                    if(buffered.length > 0){
+                        for (i = 0; i < buffered.length; i++) {
+                            var bufferedTimeRads = {
+                                start: _this.methodes.time.getTimeInRadians(buffered.start(i)),
+                                end: _this.methodes.time.getTimeInRadians(buffered.end(i))
+                            };
+
+                            _this.$.canvas().ctx.beginPath();
+                            _this.$.canvas().ctx.lineWidth = data.progBarWidth;
+                            _this.$.canvas().ctx.strokeStyle = "rgba(239,239,239,0.7)";
+
+                            _this.$.canvas().ctx.arc(radius.cx(), radius.cy(), radius.outer-data.progBarWidth+0.5, bufferedTimeRads.end+(_this.data.deg90toRad), bufferedTimeRads.start+_this.data.deg90toRad );
+                            _this.$.canvas().ctx.stroke();
+                        }
+                    }
 
                     // draw progress meter
                     _this.$.canvas().ctx.beginPath();
@@ -258,7 +280,7 @@
                     _this.$.canvas().ctx.stroke();
                 }
             }
-        }
+        };
 
         // events
         _this.events = {
@@ -286,9 +308,9 @@
                 _this.methodes.time.updateTime(e);
             },
             onVolumeChange: function(data, e){
-                _this.data.source.mediaElement.volume = parseInt(data.value)/100
+                _this.data.source.mediaElement.volume = parseInt(data.value)/100;
             }
-        }
+        };
 
         // initializer
         _this.main = function(){
@@ -338,7 +360,7 @@
         _this.update = function(){
             _this.methodes.time.addText();
             _this.methodes.canvas.drawCircle(_this.opts);
-        }
+        };
     };
 
 })();

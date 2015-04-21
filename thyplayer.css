@@ -6,7 +6,7 @@
 
 /* PLAYER BUTTON */
 .thyplayer{
-    display:block;width:400px;margin:0 auto;background:rgba(0,0,0,0.06);padding:60px;
+    display:block;width:400px;margin:0 auto;background:rgba(239,239,239,1);padding:60px;
 }
 /* PLAY BUTTON */
 .thyplayer a{

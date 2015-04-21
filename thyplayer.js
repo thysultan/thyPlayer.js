@@ -131,8 +131,9 @@
                         degToTime = (Math.abs(degrees)/360) * degToTime;
                         degToTime = degToTime;
 
-                    _this.data.source.mediaElement.currentTime = degToTime;
                     _this.data.time = degToTime;
+                    _this.data.source.mediaElement.currentTime = _this.data.time;
+                    // Firefox seems to not play after chaning the time, TODO.
                 },
                 addText: function(){
                     var $time = _this.$.base().elem.querySelector("p");
@@ -163,7 +164,6 @@
                         degrees = (degrees + 360+90) % 360;
 
                     _this.methodes.time.update(degrees);
-                    if(_this.data.source.mediaElement){_this.methodes.time.update(degrees);}
                 }
             },
             canvas: {

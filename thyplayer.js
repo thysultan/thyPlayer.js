@@ -211,8 +211,10 @@
                     _this.data.cy = _this.$.canvas().elem.height/2,
 
                     _this.data.divider = 16*data.density,
+                    // Safari: no audioprocess event or byte frequency data, https://bugs.webkit.org/show_bug.cgi?id=125031
                     _this.data.fftLength = _this.data.fbc_array.length/_this.data.divider,
                     _this.data.angleStep = Math.PI * 2 / _this.data.fftLength,
+
                     _this.data.angle = 0,
                     _this.data.line;
 
@@ -309,6 +311,7 @@
             },
             onVolumeChange: function(data, e){
                 _this.data.source.mediaElement.volume = parseInt(data.value)/100;
+                // Firefox ignores volume all together, strange.
             }
         };
 
@@ -338,6 +341,7 @@
             _this.$.canvas().elem.onmousedown = function(e) {
                 _this.events.onDragStart(e);
                 _this.$.canvas().elem.onmousemove = function(e) {_this.events.onDragMove(e);};
+                // Firefox does seem to work well with seeking, TODO: find a work around.
             };
 
             _this.$.canvas().elem.onmouseup = function(e) {

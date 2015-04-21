@@ -24,19 +24,31 @@
     z-index:100;
 }
 .thyplayer a:hover{cursor:pointer;}
-.thyplayer a.playing{width:34px;height:34px;border:none;margin-left:0px;}
+.thyplayer a.playing{
+    width: 40%;
+    height: 40%;
+    border: none;
+    margin-left: 0px;
+}
 .thyplayer a.playing:after,
 .thyplayer a.playing:before{
-    content:"";
-    display:block;
-    position:absolute;
-    top:0px;
-    height:100%;
-    width:10px;
-    background:#333;
+    content: "";
+    display: block;
+    position: absolute;
+    top: 50%;
+    height: 40px;
+    width: 10px;
+    margin-top: -20px;
+    background: #333;
 }
-.thyplayer a.playing:after{left:60%;margin-right:-0;}
-.thyplayer a.playing:before{right:60%;margin-left:-0;}
+.thyplayer a.playing:after{
+    left: 50%;
+    margin-left: 4px;
+}
+.thyplayer a.playing:before{
+    right: 50%;
+    margin-right: 4px;
+}
 
 .thyplayer h1, p{
     display:block;

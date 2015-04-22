@@ -7,10 +7,16 @@
  * Released under the MIT license
  */
 (function(){
+    // Just to be safe we are going to hide in this cave and only come out at night.
+
     // safe debugging on production
     if (!window.console){
         window.console = {log: function(data) {return(data);}};
     }
+
+    // If anyone wants to know tell them thyplayer is in the house, looking out of the window.
+    // ^^ See what i did there, looking out of the window, get it?
+    // You're hopeless, you know nothing john snow.
 
     thyplayer = function(opts) {
         base = thyplayer.prototype;
@@ -31,7 +37,7 @@
         _this.opts.src            = opts.src || null;
         _this.opts.hideTime       = opts.hideTime || null;
 
-        // nodes
+        // nodes, the beautiful smell of node flowers.
         _this.$ = {
             base: function(){
                 var $ = document.getElementsByClassName(_this.opts.node), elem = $[0];
@@ -52,7 +58,7 @@
             }
         };
 
-        // data
+        // data, more like a database. We are going to be referencing and updating this baby a lot.
         _this.data = {
             context: null,
             audio: null,
@@ -85,13 +91,16 @@
                     return { top: _y, left: _x };
                 },
                 getLine: function(cx, cy, angle, t, oRadius, iRadius) {
-                  var radiusDiff = oRadius - iRadius,            // calc radius diff to get max length
-                      length = radiusDiff * t;                   // now we have the line length
+                  var radiusDiff = oRadius - iRadius,               // calc radius diff to get max length
+                      length = radiusDiff * t;                      // now we have the line length
                   return {
                     x1: cx + oRadius * Math.cos(angle),             // x1 point (outer)
                     y1: cy + oRadius * Math.sin(angle),             // y1 point (outer)
                     x2: cx + (oRadius - length) * Math.cos(angle),  // x2 point (inner)
                     y2: cy + (oRadius - length) * Math.sin(angle)   // y2 point (inner)
+
+                                                                    // what am i doing, such pretty aligned comments are not realistic or scalable.
+                                                                    // wake to the dark world we live in.
                   };
                 }
             },
@@ -133,7 +142,7 @@
 
                     _this.data.time = degToTime;
                     _this.data.source.mediaElement.currentTime = _this.data.time;
-                    // Firefox seems to not play after chaning the time, TODO.
+                    // Firefox seems to not play after changing the time, why mister red panda confused for a fox, why? TODO.
                 },
                 addText: function(){
                     var $time = _this.$.base().elem.querySelector("p");
@@ -159,10 +168,12 @@
                     var dx = mx - _this.data.cx,
                         dy = my - _this.data.cy;
 
+                    // get angle/degrees
                     var angle = Math.atan2(dy, dx),
                         degrees = angle * (180/Math.PI);
                         degrees = (degrees + 360+90) % 360;
 
+                    // update time
                     _this.methodes.time.update(degrees);
                 }
             },
@@ -178,9 +189,12 @@
 
                     _this.$.base().elem.appendChild(_this.data.audio);
 
+                    // lets get all these tribes on the same page, i am the leader now.
                     window.AudioContext = window.AudioContext || window.webkitAudioContext || window.mozAudioContext || window.msAudioContext;
+
                     _this.data.context = new AudioContext(); // AudioContext object instance
                     analyser = _this.data.context.createAnalyser(); // AnalyserNode method
+
                     // Re-route audio playback into the processing graph of the AudioContext
                     _this.data.source = _this.data.context.createMediaElementSource(_this.data.audio);
 
@@ -189,14 +203,18 @@
 
                     _this.data.source.mediaElement = document.getElementsByClassName(_this.opts.node)[0].getElementsByTagName(_this.$.audio().tag)[0];
 
+                    // attache events and start the frameLooop
                     _this.events.onPlayClick();
                     _this.events.onPlayEnd();
                     _this.methodes.canvas.frameLooper();
                 },
                 frameLooper: function(){
+                    // lets get all these tribes on the same page, i am the leader now.
                     window.requestAnimationFrame = window.requestAnimationFrame || window.webkitRequestAnimationFrame || window.mozRequestAnimationFrame || window.msRequestAnimationFrame;
+
                     window.requestAnimationFrame(_this.methodes.canvas.frameLooper);
 
+                    // safari only returns 0.0.0.0's so no canvas visualisation there, bug: https://bugs.webkit.org/show_bug.cgi?id=125031
                     _this.data.fbc_array = new Uint8Array(analyser.frequencyBinCount);
                         analyser.getByteFrequencyData(_this.data.fbc_array);
                         _this.methodes.time.addText();
@@ -211,7 +229,8 @@
                     _this.data.cy = _this.$.canvas().elem.height/2,
 
                     _this.data.divider = 16*data.density,
-                    // Safari: no audioprocess event or byte frequency data, https://bugs.webkit.org/show_bug.cgi?id=125031
+                    // Safari: no audioprocess event or byte frequency data, bug here: https://bugs.webkit.org/show_bug.cgi?id=125031
+                    // hooray, no visualisation for safari.
                     _this.data.fftLength = _this.data.fbc_array.length/_this.data.divider,
                     _this.data.angleStep = Math.PI * 2 / _this.data.fftLength,
 
@@ -222,14 +241,19 @@
 
                     // radius of ring
                     var radius = {
+                        // Can't explain it kinda just playing with vaules here till it looks good, you know that dark place of development. Do, Not, Judge, Me.
                         inner: width/3.2,
                         outer: width/3,
+                        // Oh this guy i can explain, the center of the canvas x & y axis, remember the world is your oyster.
                         cx: function(){ return width/2; },
                         cy: function(){ return height/2; }
                     };
 
                     for(var i = 0; i < _this.data.fftLength; i += 1) {
-                        // position bars
+                        // position bars around a circle facing the center
+                        // help from: http://stackoverflow.com/questions/29664580/javascript-canvas-draw-multiple-rectangles-around-a-circle-facing-the-centre
+                        // Thanks "Ken Fyrstenberg".
+
                         _this.data.barHeight = -(_this.data.fbc_array[i] / 2)/(width/20);
                         _this.data.line = _this.methodes.cord.getLine(radius.cx(), radius.cy(), _this.data.angle, _this.data.barHeight, radius.outer, radius.inner);
 
@@ -238,13 +262,13 @@
                         _this.data.angle += _this.data.angleStep;// get next angle
                     }
 
-                    // draw bars
+                    // now draw bars and define props
                     _this.$.canvas().ctx.lineWidth = data.barWidth;// beware of center area
                     _this.$.canvas().ctx.strokeStyle = data.color;
                     if(_this.data.gradient){_this.$.canvas().ctx.strokeStyle = _this.data.gradient;}
                     _this.$.canvas().ctx.stroke();// stroke all lines at once
 
-                    // draw base static circle
+                    // next draw base static circle
                     _this.$.canvas().ctx.beginPath();
 
                     _this.$.canvas().ctx.lineWidth = data.progBarWidth/6;
@@ -255,6 +279,7 @@
                     _this.$.canvas().ctx.arc(radius.cx(), radius.cy(), radius.outer-data.progBarWidth+0.5, _this.data.deg90toRad, 1.499*Math.PI );
                     _this.$.canvas().ctx.stroke();
 
+                    // next draw buffer overlay circle
                     var buffered = _this.data.source.mediaElement.buffered;
                     if(buffered.length > 0){
                         for (i = 0; i < buffered.length; i++) {
@@ -265,14 +290,17 @@
 
                             _this.$.canvas().ctx.beginPath();
                             _this.$.canvas().ctx.lineWidth = data.progBarWidth;
-                            _this.$.canvas().ctx.strokeStyle = "rgba(239,239,239,0.7)";
+
+                            // TODO: when less lazy get background of page programaticly as opposed to hardcoding it in.
+                            _this.$.canvas().ctx.strokeStyle = "rgba(239,239,239,0.7)"; // This is the same background color of the page,
 
                             _this.$.canvas().ctx.arc(radius.cx(), radius.cy(), radius.outer-data.progBarWidth+0.5, bufferedTimeRads.end+(_this.data.deg90toRad), bufferedTimeRads.start+_this.data.deg90toRad );
                             _this.$.canvas().ctx.stroke();
+                            // At the stroke of a paint brush art is somewhat born, right?
                         }
                     }
 
-                    // draw progress meter
+                    // next draw progress meter
                     _this.$.canvas().ctx.beginPath();
                     _this.$.canvas().ctx.lineWidth = data.progBarWidth;
                     _this.$.canvas().ctx.strokeStyle = data.progBarColor;
@@ -280,6 +308,8 @@
                     _this.data.deg90toRad = 1.5 * Math.PI;
                     _this.$.canvas().ctx.arc(radius.cx(), radius.cy(), radius.outer-data.progBarWidth, _this.data.deg90toRad, _this.methodes.time.currentInRadians()+(_this.data.deg90toRad) );
                     _this.$.canvas().ctx.stroke();
+
+                    // we are done with drawing lets call it a day, hard work pays of. Sell it to the highest bidder.
                 }
             }
         };
@@ -311,48 +341,57 @@
             },
             onVolumeChange: function(data, e){
                 _this.data.source.mediaElement.volume = parseInt(data.value)/100;
-                // Firefox ignores volume all together, strange.
+                // Firefox ignores volume all together, strange and rather gangster-like if i must add.
             }
         };
 
         // initializer
         _this.main = function(){
-            _this.$.base().elem.appendChild(document.createElement("h1")); // add name
-            _this.$.base().elem.appendChild(document.createElement("p")); // add time
+            _this.$.base().elem.appendChild(document.createElement("h1")); // add name node
+            _this.$.base().elem.appendChild(document.createElement("p")); // add time node
 
+            // create canvas parent div
             var div = document.createElement("div");
                 div.className = "canvas";
             _this.$.base().elem.appendChild(div);
 
-            _this.$.base().elem.getElementsByClassName("canvas")[0].appendChild(document.createElement("a")); // add play
-            _this.$.base().elem.getElementsByClassName("canvas")[0].appendChild(document.createElement("canvas")); // add canvas
+            _this.$.base().elem.getElementsByClassName("canvas")[0].appendChild(document.createElement("a")); // add play node
+            _this.$.base().elem.getElementsByClassName("canvas")[0].appendChild(document.createElement("canvas")); // add canvas node
 
+            // create volume slider
             var vol = document.createElement("input");
                 vol.className = "volume";
                 vol.setAttribute("type", "range");
-            _this.$.base().elem.appendChild(vol);
+            _this.$.base().elem.appendChild(vol); // add volume slider
 
-            // Up, up and away
+            // From the looks of it you can already tell i do not care the least bit about ie8 or it's ancestors.
+            // Maybe even its decendent ie9 on the other hand ie10, ie11 and all that follow: i welcome you with open arms.
+            // disclaimer notice: not tested on any ie, mealy assuming ie11 & 10 are the heros i would like them to be,
+            // stuff happens man, the lazy will be lazy, plus i got a life to live, So: Don't, Judge, Me.
+
+            // Up, up and away, to the skys, to the stars we sail.
             _this.methodes.canvas.init();
 
-            // Lets attach events
+            // Lets attach those events we where talking about
             _this.events.onVolumeChange(vol);
 
             _this.$.canvas().elem.onmousedown = function(e) {
                 _this.events.onDragStart(e);
                 _this.$.canvas().elem.onmousemove = function(e) {_this.events.onDragMove(e);};
-                // Firefox does seem to work well with seeking, TODO: find a work around.
+                // Firefox does not seem to work well with changing time, TODO: find a work way.
             };
 
             _this.$.canvas().elem.onmouseup = function(e) {
                 _this.$.canvas().elem.onmousemove = null;
             };
 
+            // Did i tell you i like html5, this guy saved me from having to code a ui for this by hand,
+            // talk about dodging a bullet, born at the right time, a moment of silence for my fallen friends.
             vol.addEventListener("input", function(e){
                 _this.events.onVolumeChange(this, e);
             });
 
-            // Defaults to gradient if color not specified.
+            // Default to gradient if color not specified, why? because i like gradients. Don't, Judge, Me.
             if(!_this.opts.color){
                 var gradient = _this.$.canvas().ctx.createLinearGradient(0, 0, 0, 300);
                 gradient.addColorStop(1, 'red');
@@ -361,11 +400,13 @@
             }
         }();
 
+        // keep the river flowing.
         _this.update = function(){
             _this.methodes.time.addText();
             _this.methodes.canvas.drawCircle(_this.opts);
         };
-    };
 
+        // BOOM, hope you learned something, my sense of humor is bad, i know.
+    };
 })();
 

@@ -7,16 +7,11 @@
  * Released under the MIT license
  */
 (function(){
-    // Just to be safe we are going to hide in this cave and only come out at night.
 
     // safe debugging on production
     if (!window.console){
         window.console = {log: function(data) {return(data);}};
     }
-
-    // If anyone wants to know tell them thyplayer is in the house, looking out of the window.
-    // ^^ See what i did there, looking out of the window, get it?
-    // You're hopeless, you know nothing john snow.
 
     thyplayer = function(opts) {
         base = thyplayer.prototype;
@@ -37,7 +32,7 @@
         _this.opts.src            = opts.src || null;
         _this.opts.hideTime       = opts.hideTime || null;
 
-        // nodes, the beautiful smell of node flowers.
+        // nodes
         _this.$ = {
             base: function(){
                 var $ = document.getElementsByClassName(_this.opts.node), elem = $[0];
@@ -58,7 +53,7 @@
             }
         };
 
-        // data, more like a database. We are going to be referencing and updating this baby a lot.
+        // data, we are going to be referencing and updating this a lot.
         _this.data = {
             context: null,
             audio: null,
@@ -99,8 +94,6 @@
                     x2: cx + (oRadius - length) * Math.cos(angle),  // x2 point (inner)
                     y2: cy + (oRadius - length) * Math.sin(angle)   // y2 point (inner)
 
-                                                                    // what am i doing, such pretty aligned comments are not realistic or scalable.
-                                                                    // wake to the dark world we live in.
                   };
                 }
             },
@@ -142,7 +135,7 @@
 
                     _this.data.time = degToTime;
                     _this.data.source.mediaElement.currentTime = _this.data.time;
-                    // Firefox seems to not play after changing the time, why mister red panda confused for a fox, why? TODO.
+                    // Firefox seems to not play after changing the time TODO.
                 },
                 addText: function(){
                     var $time = _this.$.base().elem.querySelector("p");
@@ -189,7 +182,6 @@
 
                     _this.$.base().elem.appendChild(_this.data.audio);
 
-                    // lets get all these tribes on the same page, i am the leader now.
                     window.AudioContext = window.AudioContext || window.webkitAudioContext || window.mozAudioContext || window.msAudioContext;
 
                     _this.data.context = new AudioContext(); // AudioContext object instance
@@ -209,7 +201,6 @@
                     _this.methodes.canvas.frameLooper();
                 },
                 frameLooper: function(){
-                    // lets get all these tribes on the same page, i am the leader now.
                     window.requestAnimationFrame = window.requestAnimationFrame || window.webkitRequestAnimationFrame || window.mozRequestAnimationFrame || window.msRequestAnimationFrame;
 
                     window.requestAnimationFrame(_this.methodes.canvas.frameLooper);
@@ -230,7 +221,7 @@
 
                     _this.data.divider = 16*data.density,
                     // Safari: no audioprocess event or byte frequency data, bug here: https://bugs.webkit.org/show_bug.cgi?id=125031
-                    // hooray, no visualisation for safari.
+                    // meaing: no visualisation for safari.
                     _this.data.fftLength = _this.data.fbc_array.length/_this.data.divider,
                     _this.data.angleStep = Math.PI * 2 / _this.data.fftLength,
 
@@ -241,10 +232,10 @@
 
                     // radius of ring
                     var radius = {
-                        // Can't explain it kinda just playing with vaules here till it looks good, you know that dark place of development. Do, Not, Judge, Me.
+                        // just playing with vaules here till it looks good
                         inner: width/3.2,
                         outer: width/3,
-                        // Oh this guy i can explain, the center of the canvas x & y axis, remember the world is your oyster.
+                        // canvas center
                         cx: function(){ return width/2; },
                         cy: function(){ return height/2; }
                     };
@@ -291,12 +282,11 @@
                             _this.$.canvas().ctx.beginPath();
                             _this.$.canvas().ctx.lineWidth = data.progBarWidth;
 
-                            // TODO: when less lazy get background of page programaticly as opposed to hardcoding it in.
+                            // TODO: get background of page programaticly as opposed to hardcoding it in.
                             _this.$.canvas().ctx.strokeStyle = "rgba(239,239,239,0.7)"; // This is the same background color of the page,
 
                             _this.$.canvas().ctx.arc(radius.cx(), radius.cy(), radius.outer-data.progBarWidth+0.5, bufferedTimeRads.end+(_this.data.deg90toRad), bufferedTimeRads.start+_this.data.deg90toRad );
                             _this.$.canvas().ctx.stroke();
-                            // At the stroke of a paint brush art is somewhat born, right?
                         }
                     }
 
@@ -308,8 +298,6 @@
                     _this.data.deg90toRad = 1.5 * Math.PI;
                     _this.$.canvas().ctx.arc(radius.cx(), radius.cy(), radius.outer-data.progBarWidth, _this.data.deg90toRad, _this.methodes.time.currentInRadians()+(_this.data.deg90toRad) );
                     _this.$.canvas().ctx.stroke();
-
-                    // we are done with drawing lets call it a day, hard work pays of. Sell it to the highest bidder.
                 }
             }
         };
@@ -341,7 +329,7 @@
             },
             onVolumeChange: function(data, e){
                 _this.data.source.mediaElement.volume = parseInt(data.value)/100;
-                // Firefox ignores volume all together, strange and rather gangster-like if i must add.
+                // Firefox ignores volume all together, strange.
             }
         };
 
@@ -364,15 +352,11 @@
                 vol.setAttribute("type", "range");
             _this.$.base().elem.appendChild(vol); // add volume slider
 
-            // From the looks of it you can already tell i do not care the least bit about ie8 or it's ancestors.
-            // Maybe even its decendent ie9 on the other hand ie10, ie11 and all that follow: i welcome you with open arms.
-            // disclaimer notice: not tested on any ie, mealy assuming ie11 & 10 are the heros i would like them to be,
-            // stuff happens man, the lazy will be lazy, plus i got a life to live, So: Don't, Judge, Me.
+            // disclaimer notice: not tested on any ie, but i'm positive ie11 & 10 would work fine.
 
-            // Up, up and away, to the skys, to the stars we sail.
             _this.methodes.canvas.init();
 
-            // Lets attach those events we where talking about
+            // Attach events
             _this.events.onVolumeChange(vol);
 
             _this.$.canvas().elem.onmousedown = function(e) {
@@ -385,13 +369,11 @@
                 _this.$.canvas().elem.onmousemove = null;
             };
 
-            // Did i tell you i like html5, this guy saved me from having to code a ui for this by hand,
-            // talk about dodging a bullet, born at the right time, a moment of silence for my fallen friends.
             vol.addEventListener("input", function(e){
                 _this.events.onVolumeChange(this, e);
             });
 
-            // Default to gradient if color not specified, why? because i like gradients. Don't, Judge, Me.
+            // Default to gradient if color not specified.
             if(!_this.opts.color){
                 var gradient = _this.$.canvas().ctx.createLinearGradient(0, 0, 0, 300);
                 gradient.addColorStop(1, 'red');
@@ -405,8 +387,6 @@
             _this.methodes.time.addText();
             _this.methodes.canvas.drawCircle(_this.opts);
         };
-
-        // BOOM, hope you learned something, my sense of humor is bad, i know.
     };
 })();
 

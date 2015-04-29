@@ -328,7 +328,7 @@
                 _this.methodes.time.updateTime(e);
             },
             onVolumeChange: function(data, e){
-                _this.data.source.mediaElement.volume = parseInt(data.value)/100;
+                _this.data.source.mediaElement.volume = parseInt(data.value, 10)/100;
                 // Firefox ignores volume all together, strange.
             }
         };

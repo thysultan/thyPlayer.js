@@ -69,7 +69,12 @@
             radius: null,
             barHeight: null,
             src: null,
-            time: null
+            time: null,
+            bgColor: function(){
+                var elem = document.getElementsByClassName("thyplayer")[0];
+                var bgColor = window.getComputedStyle(elem,null).getPropertyValue("background-color");
+                return bgColor;
+            }
         };
 
         // methodes
@@ -283,7 +288,7 @@
                             _this.$.canvas().ctx.lineWidth = data.progBarWidth;
 
                             // TODO: get background of page programaticly as opposed to hardcoding it in.
-                            _this.$.canvas().ctx.strokeStyle = "rgba(239,239,239,0.7)"; // This is the same background color of the page,
+                            _this.$.canvas().ctx.strokeStyle = _this.data.bgColor(); // This is the same background color of the page,
 
                             _this.$.canvas().ctx.arc(radius.cx(), radius.cy(), radius.outer-data.progBarWidth+0.5, bufferedTimeRads.end+(_this.data.deg90toRad), bufferedTimeRads.start+_this.data.deg90toRad );
                             _this.$.canvas().ctx.stroke();
